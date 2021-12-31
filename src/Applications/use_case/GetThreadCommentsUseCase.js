@@ -22,7 +22,6 @@ class GetThreadCommentsUseCase {
       newComment[i].replies = replies.filter((reply) => reply.commentId === newComment[i].id)
         .map((reply) => {
           const { commentId, ...otherReply } = reply;
-          console.log(otherReply);
           return otherReply;
         });
     }
