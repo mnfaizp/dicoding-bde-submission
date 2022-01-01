@@ -4,22 +4,24 @@ class DetailComment {
     const {
       id, content,
       username, date,
+      likeCount,
     } = payload;
 
     this.id = id;
     this.content = content;
     this.date = date;
     this.username = username;
+    this.likeCount = likeCount;
   }
 
   _verifyPayload({
-    id, content, username, date,
+    id, content, username, date, likeCount,
   }) {
-    if (!id || !content || !username || !date) {
+    if (!id || !content || !username || !date || !likeCount) {
       throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof content !== 'string' || typeof username !== 'string' || typeof date !== 'string') {
+    if (typeof id !== 'string' || typeof content !== 'string' || typeof username !== 'string' || typeof date !== 'string' || typeof likeCount !== 'object') {
       throw new Error('DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
