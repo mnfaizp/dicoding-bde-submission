@@ -17,11 +17,11 @@ class DetailComment {
   _verifyPayload({
     id, content, username, date, likeCount,
   }) {
-    if (!id || !content || !username || !date || !likeCount) {
+    if (!id || !content || !username || !date) {
       throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof content !== 'string' || typeof username !== 'string' || typeof date !== 'string' || typeof likeCount !== 'string') {
+    if (typeof id !== 'string' || typeof content !== 'string' || typeof username !== 'string' || typeof date !== 'string') {
       throw new Error('DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
