@@ -9,6 +9,17 @@ class LikeRepositoryPostgres extends LikeRepository {
     this._pool = pool;
   }
 
+  async checkOwnerLikeOnComments({ owner, commentId }) {
+    const query = {
+      text: 'SELECT id FROM likes WHERE owner = $1 AND comment_id = $2',
+      values: [owner, commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows;
+  }
+
   async getLikeById({ likeId }) {
     const query = {
       text: 'SELECT id FROM likes WHERE id = $1',
@@ -34,10 +45,10 @@ class LikeRepositoryPostgres extends LikeRepository {
     await this._pool.query(query);
   }
 
-  async deleteLikeById({ likeId }) {
+  async deleteLike({ owner, commentId }) {
     const query = {
-      text: 'DELETE FROM likes WHERE id = $1',
-      values: [likeId],
+      text: 'DELETE FROM likes WHERE comment_id = $1 AND owner = $2',
+      values: [commentId, owner],
     };
 
     await this._pool.query(query);

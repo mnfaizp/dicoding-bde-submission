@@ -29,7 +29,7 @@ describe('LikeRepositoryPostgres', () => {
       const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, {}, {});
 
       // Action
-      await likeRepositoryPostgres.deleteLikeById({ likeId: 'like-123' });
+      await likeRepositoryPostgres.deleteLike({ commentId: 'comment-123', owner: 'user-123' });
 
       // Assert
       const deleted = await LikesTableTestHelper.findLike({ id: 'like-123' });
@@ -63,6 +63,23 @@ describe('LikeRepositoryPostgres', () => {
 
       // Assert
       expect(result.id).toEqual('like-123');
+    });
+  });
+
+  describe('checkOwnerLikeOnComments function', () => {
+    it('should return likes object with given owner and comment parameters', async () => {
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
+      await ThreadsTableTestHelper.addThread({ owner: 'user-123', id: 'thread-123' });
+      await CommentsTableTestHelper.addComment({ owner: 'user-123', id: 'comment-123' });
+      await LikesTableTestHelper.addLike({ commentId: 'comment-123', owner: 'user-123', id: 'like-123' });
+      const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, {}, {});
+
+      // Action
+      const result = await likeRepositoryPostgres.checkOwnerLikeOnComments({ owner: 'user-123', commentId: 'comment-123' });
+
+      // Assert
+      expect(result).toBeDefined();
+      expect(result).toHaveLength(1);
     });
   });
 

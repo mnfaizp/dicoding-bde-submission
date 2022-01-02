@@ -3,7 +3,7 @@ class LikeRepository {
     throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
-  async deleteLikeById({ likeId, owner }) {
+  async deleteLike({ commentId, owner }) {
     throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
@@ -16,6 +16,10 @@ class LikeRepository {
   }
 
   async getLikeById({ likeId }) {
+    throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
+  async checkOwnerLikeOnComments({ owner, commentId }) {
     throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 }
