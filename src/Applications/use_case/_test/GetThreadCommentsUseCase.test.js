@@ -230,7 +230,7 @@ describe('GetThreadUseCase', () => {
     const spyOnGetThreadUseCase = jest.spyOn(getUseCase, '_assignLikeCountToComment');
 
     // action
-    getUseCase.aklsdjf(expectedComments, expectedLikes);
+    getUseCase._assignLikeCountToComment(expectedComments, expectedLikes);
     expectedComments[0].likeCount = parseInt(expectedLikes[1].likes.toString(), 10);
     expectedComments[1].likeCount = parseInt(expectedLikes[0].likes.toString(), 10);
 
