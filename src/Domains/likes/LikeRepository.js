@@ -10,6 +10,14 @@ class LikeRepository {
   async getLikesByThreadId({ threadId }) {
     throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
+
+  async verifyLikeOwner({ likeId, owner }) {
+    throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
+  async getLikeById({ likeId }) {
+    throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
 }
 
 module.exports = LikeRepository;
