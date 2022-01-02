@@ -37,35 +37,6 @@ describe('LikeRepositoryPostgres', () => {
     });
   });
 
-  describe('getLikeById function', () => {
-    it('should throw NotFoundError when there is no such like', async () => {
-      // Arrange
-      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
-      await ThreadsTableTestHelper.addThread({ owner: 'user-123', id: 'thread-123' });
-      await CommentsTableTestHelper.addComment({ owner: 'user-123', id: 'comment-123' });
-      await LikesTableTestHelper.addLike({ commentId: 'comment-123', owner: 'user-123', id: 'like-123' });
-      const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, {}, {});
-
-      // Action & Assert
-      await expect(likeRepositoryPostgres.getLikeById({ likeId: 'like' })).rejects.toThrowError(NotFoundError);
-    });
-
-    it('should not throw error when like was found with given param', async () => {
-      // Arrange
-      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
-      await ThreadsTableTestHelper.addThread({ owner: 'user-123', id: 'thread-123' });
-      await CommentsTableTestHelper.addComment({ owner: 'user-123', id: 'comment-123' });
-      await LikesTableTestHelper.addLike({ commentId: 'comment-123', owner: 'user-123', id: 'like-123' });
-      const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, {}, {});
-
-      // Action
-      const result = await likeRepositoryPostgres.getLikeById({ likeId: 'like-123' });
-
-      // Assert
-      expect(result.id).toEqual('like-123');
-    });
-  });
-
   describe('checkOwnerLikeOnComments function', () => {
     it('should return likes object with given owner and comment parameters', async () => {
       await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
@@ -80,32 +51,6 @@ describe('LikeRepositoryPostgres', () => {
       // Assert
       expect(result).toBeDefined();
       expect(result).toHaveLength(1);
-    });
-  });
-
-  describe('verifyLikeOwner function', () => {
-    it('should throw AuthorizationError when is not owner', async () => {
-      // Arrange
-      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
-      await ThreadsTableTestHelper.addThread({ owner: 'user-123', id: 'thread-123' });
-      await CommentsTableTestHelper.addComment({ owner: 'user-123', id: 'comment-123' });
-      await LikesTableTestHelper.addLike({ commentId: 'comment-123', owner: 'user-123', id: 'like-123' });
-      const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, {}, {});
-
-      // Action & Assert
-      await expect(likeRepositoryPostgres.verifyLikeOwner({ likeId: 'like-123', owner: 'dicoding' })).rejects.toThrowError(AuthorizationError);
-    });
-
-    it('should not throw AuthorizationError when like deleted by owner', async () => {
-      // Arrange
-      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
-      await ThreadsTableTestHelper.addThread({ owner: 'user-123', id: 'thread-123' });
-      await CommentsTableTestHelper.addComment({ owner: 'user-123', id: 'comment-123' });
-      await LikesTableTestHelper.addLike({ commentId: 'comment-123', owner: 'user-123', id: 'like-123' });
-      const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, {}, {});
-
-      // Action & Assert
-      await expect(likeRepositoryPostgres.verifyLikeOwner({ likeId: 'like-123', owner: 'user-123' })).resolves.not.toThrowError(AuthorizationError);
     });
   });
 

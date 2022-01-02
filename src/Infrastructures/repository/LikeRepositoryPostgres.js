@@ -1,5 +1,3 @@
-const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
-const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const LikeRepository = require('../../Domains/likes/LikeRepository');
 
 class LikeRepositoryPostgres extends LikeRepository {
@@ -20,21 +18,6 @@ class LikeRepositoryPostgres extends LikeRepository {
     return result.rows;
   }
 
-  async getLikeById({ likeId }) {
-    const query = {
-      text: 'SELECT id FROM likes WHERE id = $1',
-      values: [likeId],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rows.length) {
-      throw new NotFoundError('no reply with given id');
-    }
-
-    return result.rows[0];
-  }
-
   async addLike({ commentId, owner }) {
     const id = `like-${this._idGenerator()}`;
     const query = {
@@ -52,19 +35,6 @@ class LikeRepositoryPostgres extends LikeRepository {
     };
 
     await this._pool.query(query);
-  }
-
-  async verifyLikeOwner({ likeId, owner }) {
-    const query = {
-      text: 'SELECT id FROM likes WHERE id = $1 AND owner = $2',
-      values: [likeId, owner],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rows.length) {
-      throw new AuthorizationError('not like owner');
-    }
   }
 
   async getLikesByThreadId({ threadId }) {
