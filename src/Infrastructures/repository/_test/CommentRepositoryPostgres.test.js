@@ -64,13 +64,13 @@ describe('CommentRepositoryPostgres', () => {
     });
   });
 
-  describe('getCommentById function', () => {
+  describe('verifyCommentAvailabitlity function', () => {
     it('should throw NotFoundError when comment not found', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
 
       // Action and Assert
-      await expect(commentRepositoryPostgres.getCommentById('aa')).rejects.toThrowError(NotFoundError);
+      await expect(commentRepositoryPostgres.verifyCommentAvailability('aa')).rejects.toThrowError(NotFoundError);
     });
   });
 

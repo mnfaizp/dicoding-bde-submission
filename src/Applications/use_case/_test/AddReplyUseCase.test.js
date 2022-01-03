@@ -26,7 +26,7 @@ describe('AddReplyUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockReplyRepository = new ReplyRepository();
 
-    mockCommentRepository.getCommentById = jest.fn()
+    mockCommentRepository.verifyCommentAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
@@ -45,7 +45,7 @@ describe('AddReplyUseCase', () => {
     // Assert
     expect(addedReply).toStrictEqual(expectedAddedReply);
     expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(threadId);
-    expect(mockCommentRepository.getCommentById).toBeCalledWith(commentId);
+    expect(mockCommentRepository.verifyCommentAvailability).toBeCalledWith(commentId);
     expect(mockReplyRepository.addReply).toBeCalledWith(new NewReply({
       content: payload.content,
       threadId,

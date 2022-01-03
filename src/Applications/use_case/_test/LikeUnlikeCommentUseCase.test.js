@@ -14,7 +14,7 @@ describe('LikeUnlikeCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockLikeRepository = new LikeRepository();
 
-    mockCommentRepository.getCommentById = jest.fn()
+    mockCommentRepository.verifyCommentAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
@@ -46,7 +46,7 @@ describe('LikeUnlikeCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockLikeRepository = new LikeRepository();
 
-    mockCommentRepository.getCommentById = jest.fn()
+    mockCommentRepository.verifyCommentAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
