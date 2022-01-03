@@ -84,6 +84,8 @@ describe('GetThreadUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
     const mockLikeRepository = new LikeRepository();
 
+    mockThreadRepository.verifyThreadAvailability = jest.fn()
+      .mockImplementation(() => Promise.resolve());
     mockThreadRepository.getThreadById = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedThread));
     mockCommentRepository.getCommentById = jest.fn()
@@ -126,6 +128,7 @@ describe('GetThreadUseCase', () => {
     expect(commentsOnThread).toEqual(expectedDetailThread);
     expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(params.threadId);
     expect(mockThreadRepository.getThreadById).toBeCalledWith(params.threadId);
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(params.threadId);
     expect(mockReplyRepository.getRepliesByThreadId).toBeCalledWith(params.threadId);
 
     expect(getUseCase._assignRepliesToComment).toBeCalledWith(expectedWithLikes, getReplies);

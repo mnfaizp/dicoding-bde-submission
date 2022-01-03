@@ -11,6 +11,7 @@ class GetThreadCommentsUseCase {
 
   async execute(useCaseParams) {
     /** Get detail thread, comments, replies, and likes with threadId from database */
+    await this._threadRepository.verifyThreadAvailability(useCaseParams.threadId);
     const detailThread = await this._threadRepository.getThreadById(useCaseParams.threadId);
     const comments = await this._commentRepository
       .getCommentsByThreadId(useCaseParams.threadId);

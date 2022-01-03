@@ -40,6 +40,7 @@ describe('NewCommentUseCase', () => {
 
     // Assert
     expect(addedComment).toStrictEqual(expectedAddedComment);
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(threadId);
     expect(mockCommentRepository.addComment).toBeCalledWith(new NewComment({
       threadId: newComment.threadId,
       content: newComment.content,

@@ -10,7 +10,7 @@ class DeleteReplyUseCase {
       threadId, commentId, replyId, owner,
     } = useCaseParams;
 
-    await this._threadRepository.getThreadById(threadId);
+    await this._threadRepository.verifyThreadAvailability(threadId);
     await this._commentRepository.getCommentById(commentId);
     await this._replyRepository.getReplyById(replyId);
     await this._replyRepository.verifyReplyOwner(replyId, owner);
