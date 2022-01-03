@@ -18,6 +18,7 @@ describe('NewReply', () => {
       content: {},
       owner: true,
       commentId: '1234',
+      threadId: '11',
     };
 
     // Action and Assert

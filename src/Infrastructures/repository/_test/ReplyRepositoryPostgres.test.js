@@ -203,6 +203,7 @@ describe('ReplyRepositoryPostgres', () => {
         content: 'content',
         commentId: 'comment-1',
         owner: 'user-123',
+        threadId: 'thread-123',
       });
 
       const fakeIdGenerator = () => '123'; // stub stub
