@@ -11,6 +11,19 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     this._dateGenerator = dateGenerator;
   }
 
+  async verifyThreadAvailability(threadId) {
+    const query = {
+      text: 'SELECT id FROM threads WHERE id = $1',
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Thread not found');
+    }
+  }
+
   async addThread(addThread) {
     const { title, body, owner } = addThread;
     const id = `thread-${this._idGenerator()}`;
@@ -34,11 +47,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
-      throw new NotFoundError('Thread not found');
-    }
-
-    return result.rows[0];
+    return new DetailThread({ ...result.rows[0] });
   }
 }
 
