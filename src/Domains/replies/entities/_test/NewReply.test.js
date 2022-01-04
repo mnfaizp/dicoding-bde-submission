@@ -24,4 +24,25 @@ describe('NewReply', () => {
     // Action and Assert
     expect(() => new NewReply(payload)).toThrowError('NEW_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
+
+  it('should create newReply object correctly', () => {
+    // Arrange
+    const payload = {
+      content: 'content',
+      owner: 'true',
+      commentId: '1234',
+      threadId: '11',
+    };
+
+    // Action
+    const {
+      owner, content, commentId, threadId,
+    } = new NewReply(payload);
+
+    // Assert
+    expect(owner).toEqual(payload.owner);
+    expect(content).toEqual(payload.content);
+    expect(commentId).toEqual(payload.commentId);
+    expect(threadId).toEqual(payload.threadId);
+  });
 });

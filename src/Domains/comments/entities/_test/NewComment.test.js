@@ -21,4 +21,21 @@ describe('NewComment', () => {
     // Action and Assert
     expect(() => new NewComment(payload)).toThrowError('NEW_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
+
+  it('should create newComment object correctly', () => {
+    // Arrange
+    const payload = {
+      threadId: '123',
+      content: 'content',
+      owner: 'owner',
+    };
+
+    // Action
+    const { threadId, content, owner } = new NewComment(payload);
+
+    // Assert
+    expect(threadId).toEqual(payload.threadId);
+    expect(content).toEqual(payload.content);
+    expect(owner).toEqual(payload.owner);
+  });
 });
