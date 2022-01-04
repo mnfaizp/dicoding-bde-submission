@@ -230,4 +230,26 @@ describe('ReplyRepositoryPostgres', () => {
       }));
     });
   });
+
+  describe('deleteComment function', () => {
+    it('should change is_delete field to true', async () => {
+      // Assert
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123', threadId: 'thread-123', isDelete: false, owner: 'user-123',
+      });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123', owner: 'user-123', commentId: 'comment-123', isDelete: false,
+      });
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {}, {});
+
+      // Action
+      await replyRepositoryPostgres.deleteReply('reply-123');
+
+      // Assert
+      const result = await RepliesTableTestHelper.findReply('reply-123');
+      expect(result[0].is_delete).toEqual(true);
+    });
+  });
 });
