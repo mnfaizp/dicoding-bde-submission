@@ -7,8 +7,8 @@ class LikeUnlikeCommentUseCase {
 
   async execute(useCasePayload) {
     const { commentId, threadId, owner } = useCasePayload;
-    await this._threadRepository.getThreadById(threadId);
-    await this._commentRepository.getCommentById(commentId);
+    await this._threadRepository.verifyThreadAvailability(threadId);
+    await this._commentRepository.verifyCommentAvailability(commentId);
 
     const checkResult = await this._likeRepository.checkOwnerLikeOnComments({ owner, commentId });
     const checkLiked = this._checkCommentWasLiked(checkResult);

@@ -56,6 +56,8 @@ describe('CommentRepositoryPostgres', () => {
       const addedComment = await commentRepositoryPostgres.addComment(newComment);
 
       // Assert
+      const comment = await CommentsTableTestHelper.findComment('comment-123');
+      expect(comment).toHaveLength(1);
       expect(addedComment).toStrictEqual(new AddedComment({
         id: 'comment-123',
         owner: 'user-123',
@@ -64,13 +66,26 @@ describe('CommentRepositoryPostgres', () => {
     });
   });
 
-  describe('getCommentById function', () => {
+  describe('verifyCommentAvailabitlity function', () => {
     it('should throw NotFoundError when comment not found', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
 
       // Action and Assert
-      await expect(commentRepositoryPostgres.getCommentById('aa')).rejects.toThrowError(NotFoundError);
+      await expect(commentRepositoryPostgres.verifyCommentAvailability('aa')).rejects.toThrowError(NotFoundError);
+    });
+
+    it('should not throw NotFoundError when comment found', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123', threadId: 'thread-123', isDelete: false, owner: 'user-123',
+      });
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
+
+      // Action and Assert
+      await expect(commentRepositoryPostgres.verifyCommentAvailability('comment-123')).resolves.not.toThrowError(NotFoundError);
     });
   });
 
@@ -80,7 +95,20 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
 
       // Action and Assert
-      await expect(commentRepositoryPostgres.verifyCommentOwner('aa', 'aa')).rejects.toThrowError(AuthorizationError);
+      await expect(commentRepositoryPostgres.verifyCommentOwner('a-123', 'a-123')).rejects.toThrowError(AuthorizationError);
+    });
+
+    it('should not throw AuthorizationError when owner being verified', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123', threadId: 'thread-123', isDelete: false, owner: 'user-123',
+      });
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
+
+      // Action and Assert
+      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).resolves.not.toThrowError(AuthorizationError);
     });
   });
 
@@ -133,12 +161,14 @@ describe('CommentRepositoryPostgres', () => {
           content: 'coba1',
           date: '2021',
           username: 'username',
+          isdelete: false,
         },
         {
           id: 'comment-2',
-          content: '**komentar telah dihapus**',
+          content: 'coba2',
           date: '2022',
           username: 'coba',
+          isdelete: true,
         },
       ];
 
@@ -149,6 +179,25 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       expect(result).toStrictEqual(expectedDetailComment);
+    });
+  });
+
+  describe('deleteComment function', () => {
+    it('should change is_delete field to true', async () => {
+      // Assert
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123', threadId: 'thread-123', isDelete: false, owner: 'user-123',
+      });
+      const commmentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
+
+      // Action
+      await commmentRepositoryPostgres.deleteComment('comment-123');
+
+      // Assert
+      const result = await CommentsTableTestHelper.findComment('comment-123');
+      expect(result[0].is_delete).toEqual(true);
     });
   });
 });

@@ -4,8 +4,6 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const LikesTableTestHelper = require('../../../../tests/LikesTableTestHelper');
 const LikeRepositoryPostgres = require('../LikeRepositoryPostgres');
-const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
-const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 
 describe('LikeRepositoryPostgres', () => {
   afterEach(async () => {
@@ -103,7 +101,7 @@ describe('LikeRepositoryPostgres', () => {
       const expectedLikes = [
         {
           likes: '2',
-          commentId: 'comment-1',
+          id: 'comment-1',
         },
       ];
 

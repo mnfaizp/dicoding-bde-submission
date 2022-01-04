@@ -4,7 +4,7 @@ class DetailThread {
 
     const {
       id, title, body,
-      date, username, comments,
+      date, username,
     } = payload;
 
     this.id = id;

@@ -32,15 +32,14 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async deleteReply(replyId) {
     const query = {
-      text: 'UPDATE replies SET is_delete = $1 WHERE id = $2 RETURNING is_delete',
+      text: 'UPDATE replies SET is_delete = $1 WHERE id = $2',
       values: [true, replyId],
     };
 
-    const result = await this._pool.query(query);
-    return result.rows[0];
+    await this._pool.query(query);
   }
 
-  async getReplyById(replyId) {
+  async verifyReplyAvailability(replyId) {
     const query = {
       text: 'SELECT id FROM replies WHERE id = $1',
       values: [replyId],
@@ -50,8 +49,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     if (!result.rows.length) {
       throw new NotFoundError('reply not found');
     }
-
-    return result.rows[0];
   }
 
   async verifyReplyOwner(replyId, owner) {
@@ -74,24 +71,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
     const result = await this._pool.query(query);
 
-    const returnedValues = result.rows.map((replies) => {
-      const returnedReply = {};
-
-      returnedReply.id = replies.id;
-      returnedReply.date = replies.date;
-      returnedReply.username = replies.username;
-      returnedReply.commentId = replies.comment_id;
-
-      if (replies.is_delete) {
-        returnedReply.content = '**balasan telah dihapus**';
-      } else {
-        returnedReply.content = replies.content;
-      }
-
-      return returnedReply;
-    });
-
-    return returnedValues;
+    return result.rows;
   }
 }
 

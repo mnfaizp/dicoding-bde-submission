@@ -21,24 +21,7 @@ describe('ReplyRepositoryPostgres', () => {
     await pool.end();
   });
 
-  describe('deleteReply', () => {
-    it('should change is_invalid value to true', async () => {
-      // Arrange
-      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
-      await ThreadsTableTestHelper.addThread({ owner: 'user-123', id: 'thread-123' });
-      await CommentsTableTestHelper.addComment({ owner: 'user-123', id: 'comment-123' });
-      await RepliesTableTestHelper.addReply({ commentId: 'comment-123', owner: 'user-123', id: 'reply-123' });
-      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {}, {});
-
-      // Action
-      const { is_delete: isDelete } = await replyRepositoryPostgres.deleteReply('reply-123');
-
-      // Assert
-      expect(isDelete).toEqual(true);
-    });
-  });
-
-  describe('getReplyById function', () => {
+  describe('verifyReplyAvailability function', () => {
     it('should throw NotFoundError when there is no such reply', async () => {
       // Arrange
       await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
@@ -48,7 +31,7 @@ describe('ReplyRepositoryPostgres', () => {
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {}, {});
 
       // Action & Assert
-      await expect(replyRepositoryPostgres.getReplyById('reply')).rejects.toThrowError(NotFoundError);
+      await expect(replyRepositoryPostgres.verifyReplyAvailability('reply')).rejects.toThrowError(NotFoundError);
     });
 
     it('should not throw error when reply was found with given param', async () => {
@@ -59,11 +42,8 @@ describe('ReplyRepositoryPostgres', () => {
       await RepliesTableTestHelper.addReply({ commentId: 'comment-123', owner: 'user-123', id: 'reply-123' });
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {}, {});
 
-      // Action
-      const result = await replyRepositoryPostgres.getReplyById('reply-123');
-
-      // Assert
-      expect(result.id).toEqual('reply-123');
+      // Action & Assert
+      await expect(replyRepositoryPostgres.verifyReplyAvailability('reply-123')).resolves.not.toThrowError(NotFoundError);
     });
   });
 
@@ -149,16 +129,18 @@ describe('ReplyRepositoryPostgres', () => {
         {
           id: 'reply-1',
           content: 'coba1',
-          commentId: 'comment-1',
+          comment_id: 'comment-1',
           date: '2021',
           username: 'username',
+          is_delete: false,
         },
         {
           id: 'reply-2',
-          commentId: 'comment-1',
-          content: '**balasan telah dihapus**',
+          comment_id: 'comment-1',
+          content: 'coba2',
           date: '2022',
           username: 'coba',
+          is_delete: true,
         },
       ];
 
@@ -203,6 +185,7 @@ describe('ReplyRepositoryPostgres', () => {
         content: 'content',
         commentId: 'comment-1',
         owner: 'user-123',
+        threadId: 'thread-123',
       });
 
       const fakeIdGenerator = () => '123'; // stub stub
@@ -218,11 +201,35 @@ describe('ReplyRepositoryPostgres', () => {
       const addedReply = await replyRepositoryPostgres.addReply(newReply);
 
       // Assert
+      const reply = await RepliesTableTestHelper.findReply('reply-123');
+      expect(reply).toHaveLength(1);
       expect(addedReply).toStrictEqual(new AddedReply({
         id: 'reply-123',
         content: 'content',
         owner: 'user-123',
       }));
+    });
+  });
+
+  describe('deleteReply function', () => {
+    it('should change is_delete field to true', async () => {
+      // Assert
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({
+        id: 'comment-123', threadId: 'thread-123', isDelete: false, owner: 'user-123',
+      });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123', owner: 'user-123', commentId: 'comment-123', isDelete: false,
+      });
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {}, {});
+
+      // Action
+      await replyRepositoryPostgres.deleteReply('reply-123');
+
+      // Assert
+      const result = await RepliesTableTestHelper.findReply('reply-123');
+      expect(result[0].is_delete).toEqual(true);
     });
   });
 });

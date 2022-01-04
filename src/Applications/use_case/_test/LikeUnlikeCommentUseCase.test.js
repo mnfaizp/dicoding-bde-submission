@@ -14,9 +14,9 @@ describe('LikeUnlikeCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockLikeRepository = new LikeRepository();
 
-    mockCommentRepository.getCommentById = jest.fn()
+    mockCommentRepository.verifyCommentAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockThreadRepository.getThreadById = jest.fn()
+    mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockLikeRepository.addLike = jest.fn()
       .mockImplementation(() => Promise.resolve());
@@ -33,6 +33,9 @@ describe('LikeUnlikeCommentUseCase', () => {
     await getAddUseCase.execute({ commentId, owner, threadId });
 
     // Assert
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(threadId);
+    expect(mockCommentRepository.verifyCommentAvailability).toBeCalledWith(commentId);
+    expect(mockLikeRepository.checkOwnerLikeOnComments).toBeCalledWith({ owner, commentId });
     expect(mockLikeRepository.addLike).toBeCalledWith({ commentId, owner });
   });
 
@@ -46,9 +49,9 @@ describe('LikeUnlikeCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockLikeRepository = new LikeRepository();
 
-    mockCommentRepository.getCommentById = jest.fn()
+    mockCommentRepository.verifyCommentAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockThreadRepository.getThreadById = jest.fn()
+    mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockLikeRepository.deleteLike = jest.fn()
       .mockImplementation(() => Promise.resolve());
@@ -65,6 +68,9 @@ describe('LikeUnlikeCommentUseCase', () => {
     await getAddUseCase.execute({ commentId, owner, threadId });
 
     // Assert
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(threadId);
+    expect(mockCommentRepository.verifyCommentAvailability).toBeCalledWith(commentId);
+    expect(mockLikeRepository.checkOwnerLikeOnComments).toBeCalledWith({ owner, commentId });
     expect(mockLikeRepository.deleteLike).toBeCalledWith({ commentId, owner });
   });
 

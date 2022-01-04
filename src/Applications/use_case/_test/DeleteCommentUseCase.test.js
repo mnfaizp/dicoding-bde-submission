@@ -1,6 +1,5 @@
 const DeleteCommentUseCase = require('../DeleteCommentUseCase');
 const CommentRepository = require('../../../Infrastructures/repository/CommentRepositoryPostgres');
-const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 
 describe('DeleteCommentUseCase', () => {
@@ -19,9 +18,9 @@ describe('DeleteCommentUseCase', () => {
     const mockCommentRepository = new CommentRepository();
     const mockThreadRepository = new ThreadRepository();
 
-    mockThreadRepository.getThreadById = jest.fn()
+    mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.getCommentById = jest.fn()
+    mockCommentRepository.verifyCommentAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockCommentRepository.verifyCommentOwner = jest.fn()
       .mockImplementation(() => Promise.resolve());
@@ -35,11 +34,11 @@ describe('DeleteCommentUseCase', () => {
     });
 
     // Action
-    const coba = await commentUseCase.execute(params);
+    await commentUseCase.execute(params);
 
     // Assert
-    expect(mockThreadRepository.getThreadById).toBeCalledWith(params.threadId);
-    expect(mockCommentRepository.getCommentById).toBeCalledWith(params.commentId);
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(params.threadId);
+    expect(mockCommentRepository.verifyCommentAvailability).toBeCalledWith(params.commentId);
     expect(mockCommentRepository.verifyCommentOwner).toBeCalledWith(params.commentId, params.owner);
     expect(mockCommentRepository.deleteComment).toBeCalledWith(params.commentId);
   });

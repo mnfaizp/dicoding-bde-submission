@@ -17,16 +17,16 @@ describe('DeleteCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockReplyRepository = new ReplyRepository();
 
-    mockThreadRepository.getThreadById = jest.fn()
+    mockThreadRepository.verifyThreadAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.getCommentById = jest.fn()
+    mockCommentRepository.verifyCommentAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockReplyRepository.verifyReplyOwner = jest.fn()
       .mockImplementation(() => Promise.resolve(true));
     mockReplyRepository.deleteReply = jest.fn()
       .mockImplementation(() => Promise.resolve(true));
 
-    mockReplyRepository.getReplyById = jest.fn()
+    mockReplyRepository.verifyReplyAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
     const replyUseCase = new DeleteReplyUseCase({
@@ -39,10 +39,10 @@ describe('DeleteCommentUseCase', () => {
     await replyUseCase.execute(params);
 
     // Assert
-    expect(mockThreadRepository.getThreadById).toBeCalledWith(params.threadId);
-    expect(mockCommentRepository.getCommentById).toBeCalledWith(params.commentId);
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(params.threadId);
+    expect(mockCommentRepository.verifyCommentAvailability).toBeCalledWith(params.commentId);
     expect(mockReplyRepository.verifyReplyOwner).toBeCalledWith(params.replyId, params.owner);
-    expect(mockReplyRepository.getReplyById).toBeCalledWith(params.replyId);
+    expect(mockReplyRepository.verifyReplyAvailability).toBeCalledWith(params.replyId);
     expect(mockReplyRepository.deleteReply).toBeCalledWith(params.replyId);
   });
 });
