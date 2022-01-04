@@ -34,7 +34,7 @@ describe('DeleteCommentUseCase', () => {
     });
 
     // Action
-    const coba = await commentUseCase.execute(params);
+    await commentUseCase.execute(params);
 
     // Assert
     expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(params.threadId);

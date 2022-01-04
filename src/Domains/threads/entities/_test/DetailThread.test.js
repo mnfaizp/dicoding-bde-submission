@@ -18,7 +18,6 @@ describe('DetailThread', () => {
       id: 'thread-123',
       title: 'thread',
       body: 'body',
-      comments: 'vuba',
       date: 123,
       username: true,
     };
@@ -45,5 +44,6 @@ describe('DetailThread', () => {
     expect(detailThread.title).toEqual(payload.title);
     expect(detailThread.username).toEqual(payload.username);
     expect(detailThread.body).toEqual(payload.body);
+    expect(detailThread.date).toEqual(payload.date);
   });
 });

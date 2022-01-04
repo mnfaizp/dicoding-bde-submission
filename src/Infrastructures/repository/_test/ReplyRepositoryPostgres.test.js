@@ -21,7 +21,7 @@ describe('ReplyRepositoryPostgres', () => {
     await pool.end();
   });
 
-  describe('getReplyById function', () => {
+  describe('verifyReplyAvailability function', () => {
     it('should throw NotFoundError when there is no such reply', async () => {
       // Arrange
       await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
@@ -31,7 +31,7 @@ describe('ReplyRepositoryPostgres', () => {
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {}, {});
 
       // Action & Assert
-      await expect(replyRepositoryPostgres.getReplyById('reply')).rejects.toThrowError(NotFoundError);
+      await expect(replyRepositoryPostgres.verifyReplyAvailability('reply')).rejects.toThrowError(NotFoundError);
     });
 
     it('should not throw error when reply was found with given param', async () => {
@@ -42,11 +42,8 @@ describe('ReplyRepositoryPostgres', () => {
       await RepliesTableTestHelper.addReply({ commentId: 'comment-123', owner: 'user-123', id: 'reply-123' });
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {}, {});
 
-      // Action
-      const result = await replyRepositoryPostgres.getReplyById('reply-123');
-
-      // Assert
-      expect(result.id).toEqual('reply-123');
+      // Action & Assert
+      await expect(replyRepositoryPostgres.verifyReplyAvailability('reply-123')).resolves.not.toThrowError(NotFoundError);
     });
   });
 

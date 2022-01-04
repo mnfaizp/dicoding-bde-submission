@@ -39,7 +39,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     await this._pool.query(query);
   }
 
-  async getReplyById(replyId) {
+  async verifyReplyAvailability(replyId) {
     const query = {
       text: 'SELECT id FROM replies WHERE id = $1',
       values: [replyId],
@@ -49,8 +49,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     if (!result.rows.length) {
       throw new NotFoundError('reply not found');
     }
-
-    return result.rows[0];
   }
 
   async verifyReplyOwner(replyId, owner) {

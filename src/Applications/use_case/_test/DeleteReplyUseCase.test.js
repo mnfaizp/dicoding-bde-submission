@@ -26,7 +26,7 @@ describe('DeleteCommentUseCase', () => {
     mockReplyRepository.deleteReply = jest.fn()
       .mockImplementation(() => Promise.resolve(true));
 
-    mockReplyRepository.getReplyById = jest.fn()
+    mockReplyRepository.verifyReplyAvailability = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
     const replyUseCase = new DeleteReplyUseCase({
@@ -42,7 +42,7 @@ describe('DeleteCommentUseCase', () => {
     expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(params.threadId);
     expect(mockCommentRepository.verifyCommentAvailability).toBeCalledWith(params.commentId);
     expect(mockReplyRepository.verifyReplyOwner).toBeCalledWith(params.replyId, params.owner);
-    expect(mockReplyRepository.getReplyById).toBeCalledWith(params.replyId);
+    expect(mockReplyRepository.verifyReplyAvailability).toBeCalledWith(params.replyId);
     expect(mockReplyRepository.deleteReply).toBeCalledWith(params.replyId);
   });
 });
