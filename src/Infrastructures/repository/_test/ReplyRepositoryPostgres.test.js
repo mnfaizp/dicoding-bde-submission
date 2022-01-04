@@ -21,23 +21,6 @@ describe('ReplyRepositoryPostgres', () => {
     await pool.end();
   });
 
-  describe('deleteReply', () => {
-    it('should change is_invalid value to true', async () => {
-      // Arrange
-      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'test' }); // memasukan user baru dengan username test
-      await ThreadsTableTestHelper.addThread({ owner: 'user-123', id: 'thread-123' });
-      await CommentsTableTestHelper.addComment({ owner: 'user-123', id: 'comment-123' });
-      await RepliesTableTestHelper.addReply({ commentId: 'comment-123', owner: 'user-123', id: 'reply-123' });
-      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {}, {});
-
-      // Action
-      const { is_delete: isDelete } = await replyRepositoryPostgres.deleteReply('reply-123');
-
-      // Assert
-      expect(isDelete).toEqual(true);
-    });
-  });
-
   describe('getReplyById function', () => {
     it('should throw NotFoundError when there is no such reply', async () => {
       // Arrange
@@ -231,7 +214,7 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
-  describe('deleteComment function', () => {
+  describe('deleteReply function', () => {
     it('should change is_delete field to true', async () => {
       // Assert
       await UsersTableTestHelper.addUser({ id: 'user-123' });
