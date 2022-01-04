@@ -20,12 +20,67 @@ class GetThreadCommentsUseCase {
       threadId: useCaseParams.threadId,
     });
 
+    /** formatting reply and comment content and formatting object to be used */
+    const changedCommentContent = this._changeDeletedCommentContent(comments);
+    const formattedLike = this._formatLikeTobeUsed(likes);
+    const changedReplyContent = this._changeDeletedReplyContent(replies);
+
     /** Assign comment with like count and replies */
-    const commentWithLikeCount = this._assignLikeCountToComment(comments, likes);
-    const commentsWithReplies = this._assignRepliesToComment(commentWithLikeCount, replies);
+    const commentWithLikeCount = this._assignLikeCountToComment(
+      changedCommentContent, formattedLike,
+    );
+    const commentsWithReplies = this._assignRepliesToComment(
+      commentWithLikeCount, changedReplyContent,
+    );
     detailThread.comments = commentsWithReplies;
 
     return detailThread;
+  }
+
+  _changeDeletedCommentContent(comments) {
+    return comments.map((comment) => {
+      const newDetailComment = {};
+
+      newDetailComment.id = comment.id;
+      newDetailComment.username = comment.username;
+      newDetailComment.date = comment.date;
+
+      if (comment.isdelete) {
+        newDetailComment.content = '**komentar telah dihapus**';
+      } else {
+        newDetailComment.content = comment.content;
+      }
+      return newDetailComment;
+    });
+  }
+
+  _changeDeletedReplyContent(replies) {
+    return replies.map((reply) => {
+      const returnedReply = {};
+
+      returnedReply.id = reply.id;
+      returnedReply.date = reply.date;
+      returnedReply.username = reply.username;
+      returnedReply.commentId = reply.comment_id;
+
+      if (reply.is_delete) {
+        returnedReply.content = '**balasan telah dihapus**';
+      } else {
+        returnedReply.content = reply.content;
+      }
+
+      return returnedReply;
+    });
+  }
+
+  _formatLikeTobeUsed(likes) {
+    return likes.map((like) => {
+      const newLike = {};
+      newLike.likes = like.likes;
+      newLike.commentId = like.id;
+
+      return newLike;
+    });
   }
 
   _assignLikeCountToComment(comments, counter) {

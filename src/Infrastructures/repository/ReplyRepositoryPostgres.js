@@ -74,24 +74,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
     const result = await this._pool.query(query);
 
-    const returnedValues = result.rows.map((replies) => {
-      const returnedReply = {};
-
-      returnedReply.id = replies.id;
-      returnedReply.date = replies.date;
-      returnedReply.username = replies.username;
-      returnedReply.commentId = replies.comment_id;
-
-      if (replies.is_delete) {
-        returnedReply.content = '**balasan telah dihapus**';
-      } else {
-        returnedReply.content = replies.content;
-      }
-
-      return returnedReply;
-    });
-
-    return returnedValues;
+    return result.rows;
   }
 }
 

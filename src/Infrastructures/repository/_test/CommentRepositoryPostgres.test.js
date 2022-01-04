@@ -133,12 +133,14 @@ describe('CommentRepositoryPostgres', () => {
           content: 'coba1',
           date: '2021',
           username: 'username',
+          isdelete: false,
         },
         {
           id: 'comment-2',
-          content: '**komentar telah dihapus**',
+          content: 'coba2',
           date: '2022',
           username: 'coba',
+          isdelete: true,
         },
       ];
 

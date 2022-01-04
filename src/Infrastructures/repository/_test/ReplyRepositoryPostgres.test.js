@@ -149,16 +149,18 @@ describe('ReplyRepositoryPostgres', () => {
         {
           id: 'reply-1',
           content: 'coba1',
-          commentId: 'comment-1',
+          comment_id: 'comment-1',
           date: '2021',
           username: 'username',
+          is_delete: false,
         },
         {
           id: 'reply-2',
-          commentId: 'comment-1',
-          content: '**balasan telah dihapus**',
+          comment_id: 'comment-1',
+          content: 'coba2',
           date: '2022',
           username: 'coba',
+          is_delete: true,
         },
       ];
 
