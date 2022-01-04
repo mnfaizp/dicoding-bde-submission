@@ -1,6 +1,5 @@
 const DeleteCommentUseCase = require('../DeleteCommentUseCase');
 const CommentRepository = require('../../../Infrastructures/repository/CommentRepositoryPostgres');
-const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 
 describe('DeleteCommentUseCase', () => {
