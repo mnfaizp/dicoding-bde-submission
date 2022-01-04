@@ -56,6 +56,8 @@ describe('CommentRepositoryPostgres', () => {
       const addedComment = await commentRepositoryPostgres.addComment(newComment);
 
       // Assert
+      const comment = await CommentsTableTestHelper.findComment('comment-123');
+      expect(comment).toHaveLength(1);
       expect(addedComment).toStrictEqual(new AddedComment({
         id: 'comment-123',
         owner: 'user-123',
