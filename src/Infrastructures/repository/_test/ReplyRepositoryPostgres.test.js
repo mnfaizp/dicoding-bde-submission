@@ -221,6 +221,8 @@ describe('ReplyRepositoryPostgres', () => {
       const addedReply = await replyRepositoryPostgres.addReply(newReply);
 
       // Assert
+      const reply = await RepliesTableTestHelper.findReply('reply-123');
+      expect(reply).toHaveLength(1);
       expect(addedReply).toStrictEqual(new AddedReply({
         id: 'reply-123',
         content: 'content',
