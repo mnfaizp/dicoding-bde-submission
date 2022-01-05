@@ -4,7 +4,6 @@ const DetailComment = require('../../../Domains/comments/entities/DetailComment'
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
-const LikeRepository = require('../../../Domains/likes/LikeRepository');
 
 describe('GetThreadUseCase', () => {
   it('should orchestrating the add comment use case', async () => {
@@ -57,17 +56,6 @@ describe('GetThreadUseCase', () => {
       },
     ];
 
-    const unformattedLike = [
-      {
-        id: 'comment-2',
-        likes: '4',
-      },
-      {
-        id: 'comment-1',
-        likes: '3',
-      },
-    ];
-
     const detailThread = {
       body: 'body',
       date: '2021',
@@ -79,7 +67,6 @@ describe('GetThreadUseCase', () => {
           content: 'content',
           date: 'uiop',
           id: 'comment-1',
-          likeCount: 3,
           replies: [
             {
               content: 'content2',
@@ -100,7 +87,6 @@ describe('GetThreadUseCase', () => {
           content: '**komentar telah dihapus**',
           date: 'uiop2',
           id: 'comment-2',
-          likeCount: 4,
           replies: [],
           username: 'user-1233',
         },
@@ -110,13 +96,11 @@ describe('GetThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
-    const mockLikeRepository = new LikeRepository();
 
     const getUseCase = new GetThreadCommentsUseCase({
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
       replyRepository: mockReplyRepository,
-      likeRepository: mockLikeRepository,
     });
 
     mockThreadRepository.verifyThreadAvailability = jest.fn()
@@ -129,8 +113,6 @@ describe('GetThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve(expectedComments));
     mockReplyRepository.getRepliesByThreadId = jest.fn()
       .mockImplementation(() => Promise.resolve(unformattedReplies));
-    mockLikeRepository.getLikesByThreadId = jest.fn()
-      .mockImplementation(() => Promise.resolve(unformattedLike));
 
     // Action
     const commentsOnThread = await getUseCase.execute(params);
@@ -200,87 +182,6 @@ describe('GetThreadUseCase', () => {
 
     // Assert
     expect(spyOnGetThreadUseCase).toReturnWith(expectedComments);
-  });
-
-  it('should operate __assignLikeCountToComment correctly', () => {
-    // Arrange
-    const getUseCase = new GetThreadCommentsUseCase({
-      threadRepository: {}, replyRepository: {}, commentRepository: {}, likeRepository: {},
-    });
-
-    const expectedComments = [
-      new DetailComment({
-        id: 'comment-1',
-        content: 'content',
-        username: 'user-123',
-        date: 'uiop',
-      }),
-      new DetailComment({
-        id: 'comment-2',
-        content: 'content2',
-        username: 'user-1233',
-        date: 'uiop2',
-      }),
-    ];
-
-    const expectedLikes = [
-      {
-        commentId: 'comment-2',
-        likes: '4',
-      },
-      {
-        commentId: 'comment-1',
-        likes: '3',
-      },
-    ];
-
-    const spyOnGetThreadUseCase = jest.spyOn(getUseCase, '_assignLikeCountToComment');
-
-    // action
-    getUseCase._assignLikeCountToComment(expectedComments, expectedLikes);
-    expectedComments[0].likeCount = parseInt(expectedLikes[1].likes.toString(), 10);
-    expectedComments[1].likeCount = parseInt(expectedLikes[0].likes.toString(), 10);
-
-    // Assert
-    expect(spyOnGetThreadUseCase).toHaveBeenCalled();
-    expect(spyOnGetThreadUseCase).toReturnWith(expectedComments);
-  });
-
-  it('should operate _formatLikeTobeUse correctly', () => {
-    // Arrange
-    const getUseCase = new GetThreadCommentsUseCase({
-      threadRepository: {}, replyRepository: {}, commentRepository: {},
-    });
-
-    const unformattedLike = [
-      {
-        id: 'comment-2',
-        likes: '4',
-      },
-      {
-        id: 'comment-1',
-        likes: '3',
-      },
-    ];
-
-    const expectedLikes = [
-      {
-        commentId: 'comment-2',
-        likes: '4',
-      },
-      {
-        commentId: 'comment-1',
-        likes: '3',
-      },
-    ];
-
-    const spyOnGetThreadUseCase = jest.spyOn(getUseCase, '_formatLikeTobeUsed');
-
-    // Action
-    getUseCase._formatLikeTobeUsed(unformattedLike);
-
-    // Assert
-    expect(spyOnGetThreadUseCase).toReturnWith(expectedLikes);
   });
 
   it('should oeprate __changeDeletedCommentContent correctly', () => {

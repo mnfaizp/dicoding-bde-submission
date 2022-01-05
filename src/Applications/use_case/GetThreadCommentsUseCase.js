@@ -1,12 +1,11 @@
 class GetThreadCommentsUseCase {
   constructor({
     commentRepository, threadRepository,
-    replyRepository, likeRepository,
+    replyRepository,
   }) {
     this._commentRepository = commentRepository;
     this._threadRepository = threadRepository;
     this._replyRepository = replyRepository;
-    this._likeRepository = likeRepository;
   }
 
   async execute(useCaseParams) {
@@ -16,21 +15,14 @@ class GetThreadCommentsUseCase {
     const comments = await this._commentRepository
       .getCommentsByThreadId(useCaseParams.threadId);
     const replies = await this._replyRepository.getRepliesByThreadId(useCaseParams.threadId);
-    const likes = await this._likeRepository.getLikesByThreadId({
-      threadId: useCaseParams.threadId,
-    });
 
     /** formatting reply and comment content and formatting object to be used */
     const changedCommentContent = this._changeDeletedCommentContent(comments);
-    const formattedLike = this._formatLikeTobeUsed(likes);
     const changedReplyContent = this._changeDeletedReplyContent(replies);
 
     /** Assign comment with like count and replies */
-    const commentWithLikeCount = this._assignLikeCountToComment(
-      changedCommentContent, formattedLike,
-    );
     const commentsWithReplies = this._assignRepliesToComment(
-      commentWithLikeCount, changedReplyContent,
+      changedCommentContent, changedReplyContent,
     );
 
     const thread = { ...detailThread, comments: commentsWithReplies };
@@ -72,28 +64,6 @@ class GetThreadCommentsUseCase {
 
       return returnedReply;
     });
-  }
-
-  _formatLikeTobeUsed(likes) {
-    return likes.map((like) => {
-      const newLike = {};
-      newLike.likes = like.likes;
-      newLike.commentId = like.id;
-
-      return newLike;
-    });
-  }
-
-  _assignLikeCountToComment(comments, counter) {
-    const commentWithLikeCount = comments;
-    for (let i = 0; i < commentWithLikeCount.length; i += 1) {
-      const countLike = counter
-        .filter((like) => like.commentId === commentWithLikeCount[i].id)
-        .map((like) => like.likes);
-
-      commentWithLikeCount[i].likeCount = parseInt(countLike.toString(), 10);
-    }
-    return commentWithLikeCount;
   }
 
   _assignRepliesToComment(comments, replies) {
