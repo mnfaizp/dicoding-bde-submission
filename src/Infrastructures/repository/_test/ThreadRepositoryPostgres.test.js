@@ -28,8 +28,8 @@ describe('ThreadRepositoryPostgres', () => {
 
     it('should not throw not found error when theres thread with given id', async () => {
       // Arrange
-      UsersTableTestHelper.addUser({ id: 'user-123' });
-      ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {}, {});
 
       // Action & Assert
