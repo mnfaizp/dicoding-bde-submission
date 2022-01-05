@@ -114,11 +114,110 @@ describe('GetThreadUseCase', () => {
     mockReplyRepository.getRepliesByThreadId = jest.fn()
       .mockImplementation(() => Promise.resolve(unformattedReplies));
 
+    getUseCase._assignRepliesToComment = jest.fn()
+      .mockImplementation(() => ([
+        {
+          content: 'content',
+          date: 'uiop',
+          id: 'comment-1',
+          replies: [
+            {
+              content: 'content2',
+              date: 'uiop2',
+              id: 'reply-1',
+              username: 'user-1233',
+            },
+            {
+              content: '**balasan telah dihapus**',
+              date: 'a',
+              id: 'reply-2',
+              username: 'user-1233',
+            },
+          ],
+          username: 'user-123',
+        },
+        {
+          content: '**komentar telah dihapus**',
+          date: 'uiop2',
+          id: 'comment-2',
+          replies: [],
+          username: 'user-1233',
+        },
+      ]));
+    getUseCase._changeDeletedCommentContent = jest.fn()
+      .mockImplementation(() => ([
+        {
+          content: 'content',
+          date: 'uiop',
+          id: 'comment-1',
+          username: 'user-123',
+        },
+        {
+          content: '**komentar telah dihapus**',
+          date: 'uiop2',
+          id: 'comment-2',
+          username: 'user-1233',
+        },
+      ]));
+    getUseCase._changeDeletedReplyContent = jest.fn()
+      .mockImplementation(() => ([
+        {
+          content: 'content2',
+          date: 'uiop2',
+          id: 'reply-1',
+          username: 'user-1233',
+        },
+        {
+          content: '**balasan telah dihapus**',
+          date: 'a',
+          id: 'reply-2',
+          username: 'user-1233',
+        },
+      ]));
+
     // Action
     const commentsOnThread = await getUseCase.execute(params);
 
     // Assert
-    expect(commentsOnThread).toEqual(detailThread);
+    expect(commentsOnThread).toStrictEqual(detailThread);
+
+    expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(params.threadId);
+    expect(mockThreadRepository.getThreadById).toBeCalledWith(params.threadId);
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(params.threadId);
+    expect(mockReplyRepository.getRepliesByThreadId).toBeCalledWith(params.threadId);
+
+    expect(getUseCase._assignRepliesToComment).toBeCalledWith(
+      [
+        {
+          content: 'content',
+          date: 'uiop',
+          id: 'comment-1',
+          username: 'user-123',
+        },
+        {
+          content: '**komentar telah dihapus**',
+          date: 'uiop2',
+          id: 'comment-2',
+          username: 'user-1233',
+        },
+      ],
+      [
+        {
+          content: 'content2',
+          date: 'uiop2',
+          id: 'reply-1',
+          username: 'user-1233',
+        },
+        {
+          content: '**balasan telah dihapus**',
+          date: 'a',
+          id: 'reply-2',
+          username: 'user-1233',
+        },
+      ],
+    );
+    expect(getUseCase._changeDeletedCommentContent).toBeCalledWith(expectedComments);
+    expect(getUseCase._changeDeletedReplyContent).toBeCalledWith(unformattedReplies);
   });
 
   it('should operate _assignRepliesComment correctly', () => {
@@ -128,18 +227,18 @@ describe('GetThreadUseCase', () => {
     });
 
     const expectedComments = [
-      new DetailComment({
+      {
         id: 'comment-1',
         content: 'content',
         username: 'user-123',
         date: 'uiop',
-      }),
-      new DetailComment({
+      },
+      {
         id: 'comment-2',
         content: 'content2',
         username: 'user-1233',
         date: 'uiop2',
-      }),
+      },
     ];
 
     const getReplies = [
@@ -184,7 +283,7 @@ describe('GetThreadUseCase', () => {
     expect(spyOnGetThreadUseCase).toReturnWith(expectedComments);
   });
 
-  it('should oeprate __changeDeletedCommentContent correctly', () => {
+  it('should oeprate _changeDeletedCommentContent correctly', () => {
     // Assert
     const getUseCase = new GetThreadCommentsUseCase({
       threadRepository: {}, replyRepository: {}, commentRepository: {},
