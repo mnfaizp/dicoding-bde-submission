@@ -21,7 +21,7 @@ describe('GetThreadUseCase', () => {
       date: '2021',
     });
 
-    const getComments = [
+    const expectedComments = [
       {
         id: 'comment-1',
         content: 'content',
@@ -31,26 +31,11 @@ describe('GetThreadUseCase', () => {
       },
       {
         id: 'comment-2',
-        content: 'content2',
+        content: 'aaaa',
         username: 'user-1233',
         date: 'uiop2',
         isdelete: true,
       },
-    ];
-
-    const expectedComments = [
-      new DetailComment({
-        id: 'comment-1',
-        content: 'content',
-        username: 'user-123',
-        date: 'uiop',
-      }),
-      new DetailComment({
-        id: 'comment-2',
-        content: '**komentar telah dihapus**',
-        username: 'user-1233',
-        date: 'uiop2',
-      }),
     ];
 
     const unformattedReplies = [
@@ -72,32 +57,6 @@ describe('GetThreadUseCase', () => {
       },
     ];
 
-    const expectedReplies = [
-      {
-        id: 'reply-1',
-        content: 'content2',
-        username: 'user-1233',
-        date: 'uiop2',
-      },
-      {
-        id: 'reply-2',
-        content: '**balasan telah dihapus**',
-        username: 'user-1233',
-        date: 'a',
-      },
-    ];
-
-    const expectedLikes = [
-      {
-        commentId: 'comment-2',
-        likes: '4',
-      },
-      {
-        commentId: 'comment-1',
-        likes: '3',
-      },
-    ];
-
     const unformattedLike = [
       {
         id: 'comment-2',
@@ -108,6 +67,45 @@ describe('GetThreadUseCase', () => {
         likes: '3',
       },
     ];
+
+    const detailThread = {
+      body: 'body',
+      date: '2021',
+      id: 'thread-123',
+      title: 'title',
+      username: 'owner',
+      comments: [
+        {
+          content: 'content',
+          date: 'uiop',
+          id: 'comment-1',
+          likeCount: 3,
+          replies: [
+            {
+              content: 'content2',
+              date: 'uiop2',
+              id: 'reply-1',
+              username: 'user-1233',
+            },
+            {
+              content: '**balasan telah dihapus**',
+              date: 'a',
+              id: 'reply-2',
+              username: 'user-1233',
+            },
+          ],
+          username: 'user-123',
+        },
+        {
+          content: '**komentar telah dihapus**',
+          date: 'uiop2',
+          id: 'comment-2',
+          likeCount: 4,
+          replies: [],
+          username: 'user-1233',
+        },
+      ],
+    };
 
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
@@ -134,46 +132,11 @@ describe('GetThreadUseCase', () => {
     mockLikeRepository.getLikesByThreadId = jest.fn()
       .mockImplementation(() => Promise.resolve(unformattedLike));
 
-    const withoutLikeCount = expectedComments;
-    expectedComments[0].likeCount = parseInt(expectedLikes[1].likes.toString(), 10);
-    expectedComments[1].likeCount = parseInt(expectedLikes[0].likes.toString(), 10);
-
-    const expectedWithLikes = expectedComments;
-
-    getUseCase._assignLikeCountToComment = jest.fn()
-      .mockImplementation(() => expectedComments);
-
-    getUseCase._formatLikeTobeUsed = jest.fn()
-      .mockImplementation(() => expectedLikes);
-
-    getUseCase._changeDeletedCommentContent = jest.fn()
-      .mockImplementation(() => withoutLikeCount);
-
-    getUseCase._changeDeletedReplyContent = jest.fn()
-      .mockImplementation(() => expectedReplies);
-
-    expectedComments[0].replies = expectedReplies;
-
-    const expectedDetailThread = { ...expectedThread, comments: expectedComments };
-
-    getUseCase._assignRepliesToComment = jest.fn()
-      .mockImplementation(() => expectedWithLikes);
-
     // Action
     const commentsOnThread = await getUseCase.execute(params);
 
     // Assert
-    expect(commentsOnThread).toEqual(expectedDetailThread);
-    expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(params.threadId);
-    expect(mockThreadRepository.getThreadById).toBeCalledWith(params.threadId);
-    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(params.threadId);
-    expect(mockReplyRepository.getRepliesByThreadId).toBeCalledWith(params.threadId);
-
-    expect(getUseCase._assignRepliesToComment).toBeCalledWith(expectedWithLikes, expectedReplies);
-    expect(getUseCase._assignLikeCountToComment).toBeCalledWith(withoutLikeCount, expectedLikes);
-    expect(getUseCase._formatLikeTobeUsed).toBeCalledWith(unformattedLike);
-    expect(getUseCase._changeDeletedCommentContent).toBeCalledWith(withoutLikeCount);
-    expect(getUseCase._changeDeletedReplyContent).toBeCalledWith(unformattedReplies);
+    expect(commentsOnThread).toEqual(detailThread);
   });
 
   it('should operate _assignRepliesComment correctly', () => {
@@ -365,5 +328,56 @@ describe('GetThreadUseCase', () => {
 
     // Assert
     expect(spyOnGetThreadUseCase).toReturnWith(expectedComments);
+  });
+
+  it('should operate _changeDeletedReplyContent correctly', () => {
+    // Arrange
+    const getUseCase = new GetThreadCommentsUseCase({
+      threadRepository: {}, replyRepository: {}, commentRepository: {},
+    });
+
+    const getReply = [
+      {
+        id: 'reply-1',
+        content: 'content2',
+        comment_id: 'comment-1',
+        username: 'user-1233',
+        date: 'uiop2',
+        is_delete: false,
+      },
+      {
+        id: 'reply-2',
+        content: 'content2',
+        comment_id: 'comment-1',
+        username: 'user-1233',
+        date: 'a',
+        is_delete: true,
+      },
+    ];
+
+    const expectedReplies = [
+      {
+        id: 'reply-1',
+        content: 'content2',
+        commentId: 'comment-1',
+        username: 'user-1233',
+        date: 'uiop2',
+      },
+      {
+        id: 'reply-2',
+        content: '**balasan telah dihapus**',
+        commentId: 'comment-1',
+        username: 'user-1233',
+        date: 'a',
+      },
+    ];
+
+    const spyOnGetThreadUseCase = jest.spyOn(getUseCase, '_changeDeletedReplyContent');
+
+    // Action
+    getUseCase._changeDeletedReplyContent(getReply);
+
+    // Assert
+    expect(spyOnGetThreadUseCase).toReturnWith(expectedReplies);
   });
 });

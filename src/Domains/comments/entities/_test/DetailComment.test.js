@@ -39,5 +39,6 @@ describe('DetailComment', () => {
     expect(detailComment.id).toEqual(payload.id);
     expect(detailComment.content).toEqual(payload.content);
     expect(detailComment.username).toEqual(payload.username);
+    expect(detailComment.date).toEqual(payload.date);
   });
 });

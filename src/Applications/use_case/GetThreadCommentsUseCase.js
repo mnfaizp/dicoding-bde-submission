@@ -32,9 +32,10 @@ class GetThreadCommentsUseCase {
     const commentsWithReplies = this._assignRepliesToComment(
       commentWithLikeCount, changedReplyContent,
     );
-    detailThread.comments = commentsWithReplies;
 
-    return detailThread;
+    const thread = { ...detailThread, comments: commentsWithReplies };
+
+    return thread;
   }
 
   _changeDeletedCommentContent(comments) {
