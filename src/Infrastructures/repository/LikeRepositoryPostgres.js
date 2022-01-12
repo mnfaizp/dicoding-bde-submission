@@ -21,7 +21,7 @@ class LikeRepositoryPostgres extends LikeRepository {
   async addLike({ commentId, owner }) {
     const id = `like-${this._idGenerator()}`;
     const query = {
-      text: 'INSERT INTO likes(id, comment_id, owner) VALUES ($1, $2, $3)',
+      text: 'INSERT INTO likes(id, comment_id, owner) VALUES ($1, $2, $3) RETURNING id',
       values: [id, commentId, owner],
     };
 
@@ -33,7 +33,6 @@ class LikeRepositoryPostgres extends LikeRepository {
       text: 'DELETE FROM likes WHERE comment_id = $1 AND owner = $2',
       values: [commentId, owner],
     };
-
     await this._pool.query(query);
   }
 

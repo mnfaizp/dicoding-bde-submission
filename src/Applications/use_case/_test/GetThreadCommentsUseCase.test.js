@@ -142,7 +142,7 @@ describe('GetThreadUseCase', () => {
     expect(mockThreadRepository.getThreadById).toBeCalledWith(params.threadId);
     expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(params.threadId);
     expect(mockReplyRepository.getRepliesByThreadId).toBeCalledWith(params.threadId);
-    expect(mockLikeRepository.getLikesByThreadId).toBeCalledWith(params.threadId);
+    expect(mockLikeRepository.getLikesByThreadId).toBeCalledWith({ threadId: params.threadId });
   });
 
   it('should operate _assignRepliesComment correctly', () => {
@@ -304,5 +304,66 @@ describe('GetThreadUseCase', () => {
 
     // Assert
     expect(spyOnGetThreadUseCase).toReturnWith(expectedReplies);
+  });
+
+  it('should operate _assignLikeCountToComment correctly', () => {
+    // Arrange
+    const getUseCase = new GetThreadCommentsUseCase({
+      threadRepository: {}, replyRepository: {}, commentRepository: {}, likeRepository: {},
+    });
+
+    const getComments = [
+      {
+        content: 'content',
+        date: 'uiop',
+        id: 'comment-1',
+        username: 'user-123',
+      },
+      {
+        content: '**komentar telah dihapus**',
+        date: 'uiop2',
+        id: 'comment-2',
+        username: 'user-1233',
+      },
+    ];
+
+    const expectedLikes = [
+      {
+        id: 'comment-2',
+        likes: '4',
+      },
+      {
+        id: 'comment-1',
+        likes: '3',
+      },
+    ];
+
+    const expectedComments = [
+      {
+        content: 'content',
+        date: 'uiop',
+        id: 'comment-1',
+        likeCount: 2,
+        username: 'user-123',
+      },
+      {
+        content: '**komentar telah dihapus**',
+        date: 'uiop2',
+        id: 'comment-2',
+        likeCount: 1,
+        username: 'user-1233',
+      },
+    ];
+
+    const spyOnGetThreadUseCase = jest.spyOn(getUseCase, '_assignLikeCountToComment');
+
+    // action
+    getUseCase._assignLikeCountToComment(getComments, expectedLikes);
+    expectedComments[0].likeCount = parseInt(expectedLikes[1].likes.toString(), 10);
+    expectedComments[1].likeCount = parseInt(expectedLikes[0].likes.toString(), 10);
+
+    // Assert
+    expect(spyOnGetThreadUseCase).toHaveBeenCalled();
+    expect(spyOnGetThreadUseCase).toReturnWith(expectedComments);
   });
 });

@@ -16,7 +16,9 @@ class GetThreadCommentsUseCase {
     const comments = await this._commentRepository
       .getCommentsByThreadId(useCaseParams.threadId);
     const replies = await this._replyRepository.getRepliesByThreadId(useCaseParams.threadId);
-    const counter = await this._likeRepository.getLikesByThreadId(useCaseParams.threadId);
+    const counter = await this._likeRepository.getLikesByThreadId({
+      threadId: useCaseParams.threadId,
+    });
 
     /** formatting reply and comment content and formatting object to be used */
     const changedCommentContent = this._changeDeletedCommentContent(comments);
