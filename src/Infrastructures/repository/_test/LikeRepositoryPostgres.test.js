@@ -103,7 +103,7 @@ describe('LikeRepositoryPostgres', () => {
       const expectedLikes = [
         {
           likes: '2',
-          commentId: 'comment-1',
+          id: 'comment-1',
         },
       ];
 

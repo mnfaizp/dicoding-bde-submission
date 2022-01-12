@@ -45,12 +45,7 @@ class LikeRepositoryPostgres extends LikeRepository {
 
     const result = await this._pool.query(query);
 
-    return result.rows.map((likes) => {
-      const newComment = {};
-      newComment.likes = likes.likes;
-      newComment.commentId = likes.id;
-      return newComment;
-    });
+    return result.rows;
   }
 }
 
