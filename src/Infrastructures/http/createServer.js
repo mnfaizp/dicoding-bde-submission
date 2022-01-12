@@ -9,6 +9,7 @@ const authentications = require('../../Interfaces/http/api/authentications');
 const threads = require('../../Interfaces/http/api/threads');
 const comments = require('../../Interfaces/http/api/comments');
 const replies = require('../../Interfaces/http/api/replies');
+const likes = require('../../Interfaces/http/api/likes');
 
 const createServer = async (container) => {
   const server = Hapi.server({
@@ -64,6 +65,10 @@ const createServer = async (container) => {
       plugin: replies,
       options: { container },
     },
+    {
+      plugin: likes,
+      options: { container },
+    },
   ]);
 
   server.ext('onPreResponse', (request, h) => {
@@ -95,6 +100,7 @@ const createServer = async (container) => {
         message: 'terjadi kegagalan pada server kami',
       });
       newResponse.code(500);
+      console.log(response.message);
       return newResponse;
     }
 

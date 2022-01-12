@@ -1,11 +1,12 @@
 class GetThreadCommentsUseCase {
   constructor({
     commentRepository, threadRepository,
-    replyRepository,
+    replyRepository, likeRepository,
   }) {
     this._commentRepository = commentRepository;
     this._threadRepository = threadRepository;
     this._replyRepository = replyRepository;
+    this._likeRepository = likeRepository;
   }
 
   async execute(useCaseParams) {
@@ -15,14 +16,20 @@ class GetThreadCommentsUseCase {
     const comments = await this._commentRepository
       .getCommentsByThreadId(useCaseParams.threadId);
     const replies = await this._replyRepository.getRepliesByThreadId(useCaseParams.threadId);
+    const counter = await this._likeRepository.getLikesByThreadId({
+      threadId: useCaseParams.threadId,
+    });
 
     /** formatting reply and comment content and formatting object to be used */
     const changedCommentContent = this._changeDeletedCommentContent(comments);
+    const assignedCommentWithLikeCount = this._assignLikeCountToComment(
+      changedCommentContent, counter,
+    );
     const changedReplyContent = this._changeDeletedReplyContent(replies);
 
     /** Assign comment with like count and replies */
     const commentsWithReplies = this._assignRepliesToComment(
-      changedCommentContent, changedReplyContent,
+      assignedCommentWithLikeCount, changedReplyContent,
     );
 
     const thread = { ...detailThread, comments: commentsWithReplies };
@@ -76,6 +83,18 @@ class GetThreadCommentsUseCase {
         });
     }
     return newComment;
+  }
+
+  _assignLikeCountToComment(comments, counter) {
+    const commentWithLikeCount = comments;
+    for (let i = 0; i < commentWithLikeCount.length; i += 1) {
+      const countLike = counter
+        .filter((like) => like.id === commentWithLikeCount[i].id)
+        .map((like) => like.likes);
+
+      commentWithLikeCount[i].likeCount = parseInt(countLike.toString(), 10);
+    }
+    return commentWithLikeCount;
   }
 }
 
