@@ -21,6 +21,5 @@ jobs:
           cd ~/dicoding-bde-submission
           git pull origin main
           npm install
-          npm run migrate down 10
           npm run migrate up
           pm2 restart auth-api
