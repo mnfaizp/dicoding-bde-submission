@@ -32,69 +32,51 @@ class GetThreadCommentsUseCase {
       assignedCommentWithLikeCount, changedReplyContent,
     );
 
-    const thread = { ...detailThread, comments: commentsWithReplies };
-
-    return thread;
+    return { ...detailThread, comments: commentsWithReplies };
   }
 
   _changeDeletedCommentContent(comments) {
-    return comments.map((comment) => {
-      const newDetailComment = {};
-
-      newDetailComment.id = comment.id;
-      newDetailComment.username = comment.username;
-      newDetailComment.date = comment.date;
-
-      if (comment.isdelete) {
-        newDetailComment.content = '**komentar telah dihapus**';
-      } else {
-        newDetailComment.content = comment.content;
-      }
-      return newDetailComment;
-    });
+    return comments.map((comment) => ({
+      id: comment.id,
+      username: comment.username,
+      date: comment.date,
+      content: comment.isdelete ? '**komentar telah dihapus**' : comment.content,
+    }));
   }
 
   _changeDeletedReplyContent(replies) {
-    return replies.map((reply) => {
-      const returnedReply = {};
-
-      returnedReply.id = reply.id;
-      returnedReply.date = reply.date;
-      returnedReply.username = reply.username;
-      returnedReply.commentId = reply.comment_id;
-
-      if (reply.is_delete) {
-        returnedReply.content = '**balasan telah dihapus**';
-      } else {
-        returnedReply.content = reply.content;
-      }
-
-      return returnedReply;
-    });
+    return replies.map((reply) => ({
+      id: reply.id,
+      date: reply.date,
+      username: reply.username,
+      commentId: reply.comment_id,
+      content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,
+    }));
   }
 
   _assignRepliesToComment(comments, replies) {
-    const newComment = comments;
-    for (let i = 0; i < newComment.length; i += 1) {
-      newComment[i].replies = replies.filter((reply) => reply.commentId === newComment[i].id)
+    return comments.map((comment) => {
+      const commentReplies = replies.filter((reply) => reply.commentId === comment.id)
         .map((reply) => {
           const { commentId, ...otherReply } = reply;
           return otherReply;
         });
-    }
-    return newComment;
+
+      Object.assign(comment, { replies: commentReplies });
+
+      return comment;
+    });
   }
 
   _assignLikeCountToComment(comments, counter) {
-    const commentWithLikeCount = comments;
-    for (let i = 0; i < commentWithLikeCount.length; i += 1) {
-      const countLike = counter
-        .filter((like) => like.id === commentWithLikeCount[i].id)
+    return comments.map((comment) => {
+      const commentLike = counter.filter((like) => like.id === comment.id)
         .map((like) => like.likes);
 
-      commentWithLikeCount[i].likeCount = parseInt(countLike.toString(), 10);
-    }
-    return commentWithLikeCount;
+      Object.assign(comment, { likeCount: parseInt(commentLike.toString(), 10) });
+
+      return comment;
+    });
   }
 }
 
