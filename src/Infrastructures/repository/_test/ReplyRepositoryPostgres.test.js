@@ -189,12 +189,9 @@ describe('ReplyRepositoryPostgres', () => {
       });
 
       const fakeIdGenerator = () => '123'; // stub stub
-      function fakeDateGen() {
-        this.toISOString = () => '2021';
-      }
 
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(
-        pool, fakeIdGenerator, fakeDateGen,
+        pool, fakeIdGenerator,
       );
 
       // Action

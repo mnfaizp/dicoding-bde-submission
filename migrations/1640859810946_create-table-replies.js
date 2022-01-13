@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 exports.up = (pgm) => {
   pgm.createTable('replies', {
     id: {
@@ -21,14 +19,17 @@ exports.up = (pgm) => {
     is_delete: {
       type: 'Boolean',
       notNull: true,
+      default: false,
     },
     date: {
       type: 'TEXT',
       notNull: true,
+      default: pgm.func('current_timestamp'),
     },
   });
 
   pgm.addConstraint('replies', 'fk_replies.comment_id_comments.id', 'FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE');
+  pgm.addConstraint('replies', 'fk_replies.owner_users.id', 'FOREIGN KEY (owner) REFERENCES users(id) ON DELETE CASCADE');
 };
 
 exports.down = (pgm) => {

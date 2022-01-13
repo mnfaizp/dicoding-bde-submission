@@ -1,7 +1,3 @@
-/* eslint-disable camelcase */
-
-exports.shorthands = undefined;
-
 exports.up = (pgm) => {
   pgm.createTable('comments', {
     id: {
@@ -23,6 +19,7 @@ exports.up = (pgm) => {
     is_delete: {
       type: 'Boolean',
       notNull: true,
+      default: false,
     },
   });
 

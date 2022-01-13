@@ -4,11 +4,10 @@ const AuthorizationError = require('../../Commons/exceptions/AuthorizationError'
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 
 class ReplyRepositoryPostgres extends ReplyRepository {
-  constructor(pool, idGenerator, dateGenerator) {
+  constructor(pool, idGenerator) {
     super();
     this._pool = pool;
     this._idGenerator = idGenerator;
-    this._dateGenerator = dateGenerator;
   }
 
   async addReply(newReply) {
@@ -17,17 +16,15 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     } = newReply;
 
     const id = `reply-${this._idGenerator()}`;
-    const date = new this._dateGenerator().toISOString();
-    const isDelete = false;
 
     const query = {
-      text: 'INSERT INTO replies(id, content, comment_id, owner, date, is_delete) VALUES($1, $2, $3, $4, $5, $6) RETURNING id, content, owner',
-      values: [id, content, commentId, owner, date, isDelete],
+      text: 'INSERT INTO replies(id, content, comment_id, owner) VALUES($1, $2, $3, $4) RETURNING id, content, owner',
+      values: [id, content, commentId, owner],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return new AddedReply({ ...result.rows[0] });
+    return new AddedReply({ ...rows[0] });
   }
 
   async deleteReply(replyId) {
@@ -44,9 +41,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       text: 'SELECT id FROM replies WHERE id = $1',
       values: [replyId],
     };
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!rows.length) {
       throw new NotFoundError('reply not found');
     }
   }
@@ -57,8 +54,8 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [replyId, owner],
     };
 
-    const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    const { rows } = await this._pool.query(query);
+    if (!rows.length) {
       throw new AuthorizationError('you need to be owner to delete this');
     }
   }
@@ -69,9 +66,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return result.rows;
+    return rows;
   }
 }
 

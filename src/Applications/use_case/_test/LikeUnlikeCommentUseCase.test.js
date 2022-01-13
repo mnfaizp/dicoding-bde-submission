@@ -14,14 +14,10 @@ describe('LikeUnlikeCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockLikeRepository = new LikeRepository();
 
-    mockCommentRepository.verifyCommentAvailability = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockThreadRepository.verifyThreadAvailability = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockLikeRepository.addLike = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockLikeRepository.checkOwnerLikeOnComments = jest.fn()
-      .mockImplementation(() => Promise.resolve([]));
+    mockCommentRepository.verifyCommentAvailability = jest.fn(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAvailability = jest.fn(() => Promise.resolve());
+    mockLikeRepository.addLike = jest.fn(() => Promise.resolve());
+    mockLikeRepository.checkOwnerLikeOnComments = jest.fn(() => Promise.resolve([]));
 
     const getAddUseCase = new LikeUnlikeCommentUseCase({
       commentRepository: mockCommentRepository,
@@ -46,14 +42,10 @@ describe('LikeUnlikeCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockLikeRepository = new LikeRepository();
 
-    mockCommentRepository.verifyCommentAvailability = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockThreadRepository.verifyThreadAvailability = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockLikeRepository.deleteLike = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockLikeRepository.checkOwnerLikeOnComments = jest.fn()
-      .mockImplementation(() => Promise.resolve([{ like: '1' }]));
+    mockCommentRepository.verifyCommentAvailability = jest.fn(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAvailability = jest.fn(() => Promise.resolve());
+    mockLikeRepository.deleteLike = jest.fn(() => Promise.resolve());
+    mockLikeRepository.checkOwnerLikeOnComments = jest.fn(() => Promise.resolve([{ like: '1' }]));
 
     const getAddUseCase = new LikeUnlikeCommentUseCase({
       commentRepository: mockCommentRepository,

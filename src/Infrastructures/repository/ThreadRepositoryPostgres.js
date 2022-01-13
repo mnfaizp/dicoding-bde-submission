@@ -4,11 +4,10 @@ const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const DetailThread = require('../../Domains/threads/entities/DetailThread');
 
 class ThreadRepositoryPostgres extends ThreadRepository {
-  constructor(pool, idGenerator, dateGenerator) {
+  constructor(pool, idGenerator) {
     super();
     this._pool = pool;
     this._idGenerator = idGenerator;
-    this._dateGenerator = dateGenerator;
   }
 
   async verifyThreadAvailability(threadId) {
@@ -17,9 +16,9 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!rows.length) {
       throw new NotFoundError('Thread not found');
     }
   }
@@ -27,16 +26,15 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   async addThread(addThread) {
     const { title, body, owner } = addThread;
     const id = `thread-${this._idGenerator()}`;
-    const date = new this._dateGenerator().toISOString();
 
     const query = {
-      text: 'INSERT INTO threads(id, title, body, date, owner) VALUES ($1, $2, $3, $4, $5) RETURNING id, owner, title',
-      values: [id, title, body, date, owner],
+      text: 'INSERT INTO threads(id, title, body, owner) VALUES ($1, $2, $3, $4) RETURNING id, owner, title',
+      values: [id, title, body, owner],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return new AddedThread({ ...result.rows[0] });
+    return new AddedThread({ ...rows[0] });
   }
 
   async getThreadById(threadId) {
@@ -45,9 +43,9 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return new DetailThread({ ...result.rows[0] });
+    return new DetailThread({ ...rows[0] });
   }
 }
 

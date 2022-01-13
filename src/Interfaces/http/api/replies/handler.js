@@ -35,11 +35,9 @@ class RepliesHandler {
       threadId, commentId, owner, replyId,
     });
 
-    const response = h.response({
+    return {
       status: 'success',
-    });
-    response.code(200);
-    return response;
+    };
   }
 }
 

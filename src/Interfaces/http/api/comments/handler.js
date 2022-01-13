@@ -29,13 +29,11 @@ class CommentsHandler {
     const deleteCommentUseCase = this._container.getInstance(DeleteCommentUseCase.name);
     const { threadId, commentId } = request.params;
     const { id: owner } = request.auth.credentials;
-    const deletedComment = await deleteCommentUseCase.execute({ threadId, commentId, owner });
+    await deleteCommentUseCase.execute({ threadId, commentId, owner });
 
-    const response = h.response({
+    return {
       status: 'success',
-    });
-    response.code(200);
-    return response;
+    };
   }
 }
 
