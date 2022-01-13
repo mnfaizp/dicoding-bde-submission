@@ -14,11 +14,9 @@ class LikesHandler {
 
     await likeUnlikeUseCase.execute({ threadId, commentId, owner });
 
-    const response = h.response({
+    return {
       status: 'success',
-    });
-    response.code(200);
-    return response;
+    };
   }
 }
 
