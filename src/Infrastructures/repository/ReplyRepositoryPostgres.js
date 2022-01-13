@@ -4,11 +4,10 @@ const AuthorizationError = require('../../Commons/exceptions/AuthorizationError'
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 
 class ReplyRepositoryPostgres extends ReplyRepository {
-  constructor(pool, idGenerator, dateGenerator) {
+  constructor(pool, idGenerator) {
     super();
     this._pool = pool;
     this._idGenerator = idGenerator;
-    this._dateGenerator = dateGenerator;
   }
 
   async addReply(newReply) {
@@ -17,11 +16,10 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     } = newReply;
 
     const id = `reply-${this._idGenerator()}`;
-    const isDelete = false;
 
     const query = {
-      text: 'INSERT INTO replies(id, content, comment_id, owner, is_delete) VALUES($1, $2, $3, $4, $5) RETURNING id, content, owner',
-      values: [id, content, commentId, owner, isDelete],
+      text: 'INSERT INTO replies(id, content, comment_id, owner) VALUES($1, $2, $3, $4) RETURNING id, content, owner',
+      values: [id, content, commentId, owner],
     };
 
     const result = await this._pool.query(query);
