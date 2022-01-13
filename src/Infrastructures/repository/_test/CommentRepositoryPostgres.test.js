@@ -44,12 +44,9 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       const fakeIdGenerator = () => '123'; // stub stub
-      function fakeDateGen() {
-        this.toISOString = () => '2021';
-      }
 
       const commentRepositoryPostgres = new CommentRepositoryPostgres(
-        pool, fakeIdGenerator, fakeDateGen,
+        pool, fakeIdGenerator,
       );
 
       // Action

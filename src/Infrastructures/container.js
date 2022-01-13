@@ -119,9 +119,6 @@ container.register([
         {
           concrete: nanoid,
         },
-        {
-          concrete: date,
-        },
       ],
     },
   },

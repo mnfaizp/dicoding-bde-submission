@@ -2,25 +2,22 @@ const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
-const DetailComment = require('../../Domains/comments/entities/DetailComment');
 
 class CommentRepositoryPostgres extends CommentRepository {
-  constructor(pool, idGenerator, dateGenerator) {
+  constructor(pool, idGenerator) {
     super();
     this._pool = pool;
     this._idGenerator = idGenerator;
-    this._dateGenerator = dateGenerator;
   }
 
   async addComment(newComment) {
     const { content, owner, threadId } = newComment;
     const id = `comment-${this._idGenerator()}`;
-    const date = new this._dateGenerator().toISOString();
     const isDelete = false;
 
     const query = {
-      text: 'INSERT INTO comments(id, content, owner, thread_id, is_delete, date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, content, owner',
-      values: [id, content, owner, threadId, isDelete, date],
+      text: 'INSERT INTO comments(id, content, owner, thread_id, is_delete) VALUES ($1, $2, $3, $4, $5) RETURNING id, content, owner',
+      values: [id, content, owner, threadId, isDelete],
     };
 
     const result = await this._pool.query(query);

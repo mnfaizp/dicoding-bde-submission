@@ -151,7 +151,7 @@ describe('/comments endpoint', () => {
       // Arrange
       const accessToken = await ServerTestHelper.getAccessToken();
 
-      await UsersTestTableHelper.addUser({ id: 'user-111 ' });
+      await UsersTestTableHelper.addUser({ id: 'user-111' });
 
       await ThreadsTestTableHelper.addThread({
         id: 'thread-123',
