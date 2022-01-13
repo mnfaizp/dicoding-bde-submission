@@ -19,6 +19,7 @@ exports.up = (pgm) => {
     is_delete: {
       type: 'Boolean',
       notNull: true,
+      default: false,
     },
     date: {
       type: 'TEXT',
