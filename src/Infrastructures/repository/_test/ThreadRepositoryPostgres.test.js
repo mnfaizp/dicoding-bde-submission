@@ -54,12 +54,9 @@ describe('ThreadRepositoryPostgres', () => {
       });
 
       const fakeIdGenerator = () => '123'; // stub stub
-      function fakeDateGen() {
-        this.toISOString = () => '2021';
-      }
 
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(
-        pool, fakeIdGenerator, fakeDateGen,
+        pool, fakeIdGenerator,
       );
 
       // Action
