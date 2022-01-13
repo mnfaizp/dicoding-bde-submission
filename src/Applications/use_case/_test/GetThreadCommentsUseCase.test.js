@@ -119,18 +119,12 @@ describe('GetThreadUseCase', () => {
       likeRepository: mockLikeRepository,
     });
 
-    mockThreadRepository.verifyThreadAvailability = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockThreadRepository.getThreadById = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedThread));
-    mockCommentRepository.verifyCommentAvailability = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.getCommentsByThreadId = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedComments));
-    mockReplyRepository.getRepliesByThreadId = jest.fn()
-      .mockImplementation(() => Promise.resolve(unformattedReplies));
-    mockLikeRepository.getLikesByThreadId = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedLikeCount));
+    mockThreadRepository.verifyThreadAvailability = jest.fn(() => Promise.resolve());
+    mockThreadRepository.getThreadById = jest.fn(() => Promise.resolve(expectedThread));
+    mockCommentRepository.verifyCommentAvailability = jest.fn(() => Promise.resolve());
+    mockCommentRepository.getCommentsByThreadId = jest.fn(() => Promise.resolve(expectedComments));
+    mockReplyRepository.getRepliesByThreadId = jest.fn(() => Promise.resolve(unformattedReplies));
+    mockLikeRepository.getLikesByThreadId = jest.fn(() => Promise.resolve(expectedLikeCount));
 
     // Action
     const commentsOnThread = await getUseCase.execute(params);
