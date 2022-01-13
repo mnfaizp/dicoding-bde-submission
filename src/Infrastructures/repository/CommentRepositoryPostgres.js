@@ -19,9 +19,9 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [id, content, owner, threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return new AddedComment({ ...result.rows[0] });
+    return new AddedComment({ ...rows[0] });
   }
 
   async verifyCommentAvailability(commentId) {
@@ -30,9 +30,9 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [commentId, false],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!rows.length) {
       throw new NotFoundError('comment not found');
     }
   }
@@ -43,8 +43,8 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [true, commentId],
     };
 
-    const result = await this._pool.query(query);
-    return result.rows[0];
+    const { rows } = await this._pool.query(query);
+    return rows;
   }
 
   async verifyCommentOwner(commentId, owner) {
@@ -53,9 +53,9 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [commentId, owner],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!rows.length) {
       throw new AuthorizationError('must be comment owner to delete');
     }
   }
@@ -66,9 +66,9 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return result.rows;
+    return rows;
   }
 }
 

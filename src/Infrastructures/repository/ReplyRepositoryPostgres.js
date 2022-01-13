@@ -22,9 +22,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [id, content, commentId, owner],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return new AddedReply({ ...result.rows[0] });
+    return new AddedReply({ ...rows[0] });
   }
 
   async deleteReply(replyId) {
@@ -41,9 +41,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       text: 'SELECT id FROM replies WHERE id = $1',
       values: [replyId],
     };
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!rows.length) {
       throw new NotFoundError('reply not found');
     }
   }
@@ -54,8 +54,8 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [replyId, owner],
     };
 
-    const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    const { rows } = await this._pool.query(query);
+    if (!rows.length) {
       throw new AuthorizationError('you need to be owner to delete this');
     }
   }
@@ -66,9 +66,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return result.rows;
+    return rows;
   }
 }
 

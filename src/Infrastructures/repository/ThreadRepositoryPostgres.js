@@ -16,9 +16,9 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!rows.length) {
       throw new NotFoundError('Thread not found');
     }
   }
@@ -32,9 +32,9 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [id, title, body, owner],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return new AddedThread({ ...result.rows[0] });
+    return new AddedThread({ ...rows[0] });
   }
 
   async getThreadById(threadId) {
@@ -43,9 +43,9 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return new DetailThread({ ...result.rows[0] });
+    return new DetailThread({ ...rows[0] });
   }
 }
 

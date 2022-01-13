@@ -13,9 +13,9 @@ class LikeRepositoryPostgres extends LikeRepository {
       values: [owner, commentId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return result.rows;
+    return rows;
   }
 
   async addLike({ commentId, owner }) {
@@ -42,9 +42,9 @@ class LikeRepositoryPostgres extends LikeRepository {
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return result.rows;
+    return rows;
   }
 }
 
