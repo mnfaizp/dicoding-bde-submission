@@ -29,6 +29,9 @@ describe('LikeUnlikeCommentUseCase', () => {
     await getAddUseCase.execute({ commentId, owner, threadId });
 
     // Assert
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(threadId);
+    expect(mockCommentRepository.verifyCommentAvailability).toBeCalledWith(commentId);
+    expect(mockLikeRepository.checkOwnerLikeOnComments).toBeCalledWith({ commentId, owner });
     expect(mockLikeRepository.addLike).toBeCalledWith({ commentId, owner });
   });
 
@@ -57,6 +60,9 @@ describe('LikeUnlikeCommentUseCase', () => {
     await getAddUseCase.execute({ commentId, owner, threadId });
 
     // Assert
+    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(threadId);
+    expect(mockCommentRepository.verifyCommentAvailability).toBeCalledWith(commentId);
+    expect(mockLikeRepository.checkOwnerLikeOnComments).toBeCalledWith({ commentId, owner });
     expect(mockLikeRepository.deleteLike).toBeCalledWith({ commentId, owner });
   });
 
